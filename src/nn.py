@@ -7,6 +7,12 @@ def gen_layer(min_neurons, max_neurons):
     layer = np.zeros((num_neurons, ))
     return layer
 
+def gen_weight_layer(num_rows, num_cols):
+    if num_rows >= num_cols:
+        return np.random.uniform(-1, 1, (num_rows, num_cols))
+    else:
+        return np.random.uniform(-1, 1, (num_cols, num_rows))
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -18,9 +24,9 @@ class NeuralNetwork:
     def __init__(self, num_hidden_layers=1, min_neurons=1, max_neurons=1, input_layer=None, output_layer=None):
 
         if input_layer is not None:
-            set_input_layer(input_layer)
+            self.set_input_layer(input_layer)
         if output_layer is not None:
-            set_output_layer(output_layer)
+            self.set_output_layer(output_layer)
 
         self.num_hidden_layers = num_hidden_layers
         self.min_neurons = min_neurons
@@ -30,30 +36,27 @@ class NeuralNetwork:
         for layer in range(num_hidden_layers):
             self.layers.append(gen_layer(min_neurons, max_neurons))
 
-        self.layers = np.asmatrix(self.layers)
+        self.layers = np.array(self.layers)
 
     def set_input_layer(self, input_layer):
         self.input_layer = input_layer
 
     def set_output_layer(self, output_layer):
-        self.output_layer = ouput_layer
+        self.output_layer = output_layer
 
     def init_weights(self):
         self.weights = []
-        num_weight_layers = self.num_hidden_layers + 1 
 
-        print("Initializing weights to a random number:")
-        for i in range(num_weight_layers):
+        self.weights.append(gen_weight_layer(len(self.input_layer), len(self.layers[0])))
+
+        for i in range(len(self.layers)):
             # will revise this method. It is suboptimal, but will do for now
-            if i == 0:
-                print("input to 1st weight layer")
-                weight_layer = np.random.uniform(-1, 1, (len(self.input_layer), len(self.layers[0])))
-            elif i == num_weight_layers - 1:
-                print("last weight layer to output layer")
-            else:
-                print("layer #", i + 1)
+            weight_layer = []
+            if i < len(self.layers) - 1:
+                weight_layer = gen_weight_layer(len(self.layers[i]), len(self.layers[i + 1]))
+                self.weights.append(weight_layer)
 
-
+        self.weights.append(gen_weight_layer(len(self.layers[len(self.layers) - 1]), len(self.output_layer)))
 
     def forward_prop(self):
         # weights have already been randomly initilized
@@ -65,10 +68,14 @@ class NeuralNetwork:
     def print_layers(self):
         print(self.layers)
 
+    def print_weights(self):
+        print(self.weights)
+
 
 
 # Driver code, TEMP
 if __name__ == '__main__':
-    nn = NeuralNetwork(2, 3, 4)
+    nn = NeuralNetwork(1, 2, 2,[0,0,0], [0,0,0])
     nn.print_layers()
     nn.init_weights()
+    nn.print_weights()
