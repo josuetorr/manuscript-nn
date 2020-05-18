@@ -47,6 +47,7 @@ class NeuralNetwork:
             # will revise this method. It is suboptimal, but will do for now
             if i == 0:
                 print("input to 1st weight layer")
+                weight_layer = np.random.uniform(-1, 1, (len(self.input_layer), len(self.layers[0])))
             elif i == num_weight_layers - 1:
                 print("last weight layer to output layer")
             else:
