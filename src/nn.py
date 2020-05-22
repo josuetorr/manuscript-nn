@@ -1,4 +1,5 @@
 import numpy as np
+import bob
 
 # Generate a random number of weights between min_neurons and max_neurons
 # Each weight has a value between -1 and 1
@@ -73,3 +74,4 @@ if __name__ == '__main__':
     nn.train(ex_in, ex_out)
     print(nn.layers)
 
+    hello()
