@@ -17,7 +17,13 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 def sigmoid_prime(x):
-    pass
+    return x * (1 - x)
+
+def prepend(bob, item):
+    l = [item]
+    for i in bob:
+        l.append(i)
+    return l
 
 # For now, each hidden layer will have a random number of neurons between min_neurons and max_neurons, inclusively
 class NeuralNetwork:
@@ -38,16 +44,10 @@ class NeuralNetwork:
 
         self.layers = np.array(self.layers)
 
-    def set_input_layer(self, input_layer):
-        self.input_layer = input_layer
-
-    def set_output_layer(self, output_layer):
-        self.output_layer = output_layer
-
-    def init_weights(self):
+    def init_weights(self, ex_in, ex_out):
         self.weights = []
 
-        self.weights.append(gen_weight_layer(len(self.input_layer), len(self.layers[0])))
+        self.weights.append(gen_weight_layer(len(ex_in), len(self.layers[0])))
 
         for i in range(len(self.layers)):
             # will revise this method. It is suboptimal, but will do for now
@@ -56,26 +56,20 @@ class NeuralNetwork:
                 weight_layer = gen_weight_layer(len(self.layers[i]), len(self.layers[i + 1]))
                 self.weights.append(weight_layer)
 
-        self.weights.append(gen_weight_layer(len(self.layers[len(self.layers) - 1]), len(self.output_layer)))
+        self.weights.append(gen_weight_layer(len(self.layers[len(self.layers) - 1]), len(ex_out)))
 
-    def forward_prop(self):
-        # weights have already been randomly initilized
-        # input layer has already been setup
-
-        # for each layer, hidden and output, we start the foward propagation
+    def forward_prop(self, ex_in, ex_out):
         pass
 
-    def print_layers(self):
-        print(self.layers)
+    def train(self, ex_in, ex_out):
+        self.init_weights(ex_in, ex_out) 
 
-    def print_weights(self):
-        print(self.weights)
-
-
-
-# Driver code, TEMP
+# Driver code; TEMP
 if __name__ == '__main__':
-    nn = NeuralNetwork(1, 2, 2,[0,0,0], [0,0,0])
-    nn.print_layers()
-    nn.init_weights()
-    nn.print_weights()
+    ex_in = [0,0,0]
+    ex_out = [0,0,0]
+    nn = NeuralNetwork(1, 2, 2)
+    print(nn.layers)
+    nn.train(ex_in, ex_out)
+    print(nn.layers)
+
