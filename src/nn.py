@@ -23,14 +23,13 @@ class NeuralNetwork():
 
     def _init_weights(self):
         self.weights = []
-
         for i, layer in enumerate(self.layers):
             if i == 0:
-                self.weights.append(np.random.uniform(-1, 1, self.size_i))
-            elif i == len(self.layers) - 1:
-                pass
-            else:
-                pass
+                shape = (self.size_i, len(self.layers[i+1]))
+                self.weights.append(np.random.uniform(-1, 1, (shape)))
+            elif i < len(self.layers) - 1:
+                shape = (len(self.layers[i]), len(self.layers[i+1]))
+                self.weights.append(np.random.uniform(-1, 1, (shape)))
 
 
     def _init_layers(self):
@@ -45,8 +44,24 @@ class NeuralNetwork():
                 layer = [0] * self.npl
             self.layers.append(layer)
 
+    def forward_prop(self, ex_in, ex_out):
+        for i, layer in enumerate(self.layers):
+            # setting first layer (input)
+            if i == 0:
+                self.layers[0] = ex_in
+            else:
+                for node in layer:
+                    activations = sigmoid(np.dot(np.transpose(self.layers[i-1]), self.weights[i-1]))
+                    self.layers[i] = activations
+
+    def back_prop(self, ex_in, ex_out):
+
+
 # drive code, TEMP
 if __name__ == '__main__':
-    nn = NeuralNetwork(3,3,1,3)
+    ex_in = [1,0,0]
+    ex_out = [1,1,1]
+    nn = NeuralNetwork(3,3,1,2)
     print(nn.layers)
-    print(nn.weights)
+    nn.forward_prop(ex_in, ex_out)
+    print(nn.layers)
