@@ -21,6 +21,10 @@ class NeuralNetwork():
         # between -1 and 1
         self._init_weights()
 
+        # initialize the delta values.
+        # we simply copy the layers matrix because they have the same dimensions
+        self._init_deltas()
+
     def _init_weights(self):
         self.weights = []
         for i, layer in enumerate(self.layers):
@@ -30,7 +34,11 @@ class NeuralNetwork():
             elif i < len(self.layers) - 1:
                 shape = (len(self.layers[i]), len(self.layers[i+1]))
                 self.weights.append(np.random.uniform(-1, 1, (shape)))
+        return
 
+    def _init_deltas(self):
+        self.deltas = self.layers.copy()
+        return
 
     def _init_layers(self):
         self.layers = []
@@ -43,8 +51,9 @@ class NeuralNetwork():
             else:
                 layer = [0] * self.npl
             self.layers.append(layer)
+        return
 
-    def forward_prop(self, ex_in, ex_out):
+    def think(self, ex_in, ex_out):
         for i, layer in enumerate(self.layers):
             # setting first layer (input)
             if i == 0:
@@ -53,15 +62,30 @@ class NeuralNetwork():
                 for node in layer:
                     activations = sigmoid(np.dot(np.transpose(self.layers[i-1]), self.weights[i-1]))
                     self.layers[i] = activations
+        return
 
     def back_prop(self, ex_in, ex_out):
+        for i in range(len(self.deltas) - 1, -1, -1):
+            print(i)
+            # setting up the last layer
+            if i == len(self.deltas) - 1:
+                self.deltas[-1] = sigmoid_prime(np.dot(np.transpose(self.layers[-2]), self.weights[-1])) \
+                        * (ex_out - self.layers[-1])
 
+            ##### GOTTA FIX THIS PART ######
+            # all other layers
+            elif i < len(self.deltas) - 1 and i >= 0:
+                self.deltas[i] = sigmoid_prime(np.dot(np.transpose(self.layers[i+1]), self.weights[i])) \
+                        * np.dot(np.transpose(self.deltas[i+1]), self.weights[i])
+
+        return
 
 # drive code, TEMP
 if __name__ == '__main__':
     ex_in = [1,0,0]
     ex_out = [1,1,1]
     nn = NeuralNetwork(3,3,1,2)
-    print(nn.layers)
-    nn.forward_prop(ex_in, ex_out)
-    print(nn.layers)
+    print(nn.deltas)
+    nn.think(ex_in, ex_out)
+    nn.back_prop(ex_in, ex_out)
+    print(nn.deltas)
