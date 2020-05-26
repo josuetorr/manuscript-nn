@@ -66,7 +66,6 @@ class NeuralNetwork():
 
     def back_prop(self, ex_in, ex_out):
         for i in range(len(self.deltas) - 1, -1, -1):
-            print(i)
             # setting up the last layer
             if i == len(self.deltas) - 1:
                 self.deltas[-1] = sigmoid_prime(np.dot(np.transpose(self.layers[-2]), self.weights[-1])) \
@@ -75,9 +74,12 @@ class NeuralNetwork():
             ##### GOTTA FIX THIS PART ######
             # all other layers
             elif i < len(self.deltas) - 1 and i >= 0:
-                self.deltas[i] = sigmoid_prime(np.dot(np.transpose(self.layers[i+1]), self.weights[i])) \
-                        * np.dot(np.transpose(self.deltas[i+1]), self.weights[i])
+                self.deltas[i] = sigmoid_prime(np.dot(self.layers[i+1], np.transpose(self.weights[i]))) \
+                        * np.dot(self.deltas[i+1], np.transpose(self.weights[i]))
 
+        return
+
+    def update_weights(self):
         return
 
 # drive code, TEMP
@@ -85,7 +87,5 @@ if __name__ == '__main__':
     ex_in = [1,0,0]
     ex_out = [1,1,1]
     nn = NeuralNetwork(3,3,1,2)
-    print(nn.deltas)
     nn.think(ex_in, ex_out)
     nn.back_prop(ex_in, ex_out)
-    print(nn.deltas)
