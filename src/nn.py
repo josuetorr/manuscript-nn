@@ -13,6 +13,7 @@ class NeuralNetwork():
         self.num_hl = num_hidden_layers
         self.npl = neurons_per_layers
 
+        self.learning_factor = 0.2
         # we now know the "dimensions" of our nn
         # let's initialize the activation values of our layers to 0 given the current dimensions
         self._init_layers()
@@ -53,7 +54,7 @@ class NeuralNetwork():
             self.layers.append(layer)
         return
 
-    def think(self, ex_in, ex_out):
+    def think(self, ex_in):
         for i, layer in enumerate(self.layers):
             # setting first layer (input)
             if i == 0:
@@ -62,7 +63,7 @@ class NeuralNetwork():
                 for node in layer:
                     activations = sigmoid(np.dot(np.transpose(self.layers[i-1]), self.weights[i-1]))
                     self.layers[i] = activations
-        return
+        return self.layers[-1]
 
     def back_prop(self, ex_in, ex_out):
         for i in range(len(self.deltas) - 1, -1, -1):
@@ -71,7 +72,6 @@ class NeuralNetwork():
                 self.deltas[-1] = sigmoid_prime(np.dot(np.transpose(self.layers[-2]), self.weights[-1])) \
                         * (ex_out - self.layers[-1])
 
-            ##### GOTTA FIX THIS PART ######
             # all other layers
             elif i < len(self.deltas) - 1 and i >= 0:
                 self.deltas[i] = sigmoid_prime(np.dot(self.layers[i+1], np.transpose(self.weights[i]))) \
@@ -80,12 +80,33 @@ class NeuralNetwork():
         return
 
     def update_weights(self):
+        for i in range(len(self.weights)):
+            for j in range(len(self.weights[i])):
+                for k in range(len(self.weights[i][j])):
+                    self.weights[i][j][k] += self.learning_factor * self.layers[i][j] * self.deltas[i][j]
         return
+
+    def train(self, ex_in, ex_out):
+        self.think(ex_in)
+        self.back_prop(ex_in, ex_out)
+        self.update_weights()
+        return
+
 
 # drive code, TEMP
 if __name__ == '__main__':
-    ex_in = [1,0,0]
-    ex_out = [1,1,1]
-    nn = NeuralNetwork(3,3,1,2)
-    nn.think(ex_in, ex_out)
-    nn.back_prop(ex_in, ex_out)
+    input_exemples = [[1,1,1,1],
+                      [1,0,1,0],
+                      [1,1,0,0],
+                      [0,0,1,1],
+                      [0,0,0,0],
+                      [0,1,1,1]]
+
+    output_exemples = [1,1,0,0,1,0]
+
+    nn = NeuralNetwork(4,1,1,2)
+    for i in range(len(input_exemples)):
+        nn.train(input_exemples[i], output_exemples[i])
+
+    input_testing = [0,1,1,0]
+    print(nn.think(input_testing))
