@@ -7,11 +7,11 @@ def sigmoid_prime(x):
     return x * (1 - x)
 
 class NeuralNetwork():
-    def __init__(self, size_input=1, size_output=1, num_hidden_layers=1, neurons_per_layers=1):
+    def __init__(self, size_input=1, size_output=1, num_hidden_layers=1, neurons_per_layer=1):
         self.size_i = size_input
         self.size_o = size_output
         self.num_hl = num_hidden_layers
-        self.npl = neurons_per_layers
+        self.npl = neurons_per_layer
 
         self.learning_factor = 0.2
         # we now know the "dimensions" of our nn
