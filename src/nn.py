@@ -43,6 +43,7 @@ class NeuralNetwork():
 
     def _init_layers(self):
         self.layers = []
+        # +2 for input and output layer
         for i in range(self.num_hl + 2):
             layer = []
             if i == 0:
@@ -54,6 +55,7 @@ class NeuralNetwork():
             self.layers.append(layer)
         return
 
+    """ Forward propagation """
     def think(self, ex_in):
         for i, layer in enumerate(self.layers):
             # setting first layer (input)
@@ -91,22 +93,3 @@ class NeuralNetwork():
         self.back_prop(ex_in, ex_out)
         self.update_weights()
         return
-
-
-# drive code, TEMP
-if __name__ == '__main__':
-    input_exemples = [[1,1,1,1],
-                      [1,0,1,0],
-                      [1,1,0,0],
-                      [0,0,1,1],
-                      [0,0,0,0],
-                      [0,1,1,1]]
-
-    output_exemples = [1,1,0,0,1,0]
-
-    nn = NeuralNetwork(4,1,1,2)
-    for i in range(len(input_exemples)):
-        nn.train(input_exemples[i], output_exemples[i])
-
-    input_testing = [0,1,1,0]
-    print(nn.think(input_testing))
